@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: revisionbot
+    runtime: python
+    region: frankfurt # ou oregon, selon ta localisation
+    buildCommand: pip install -r requirements.txt
+    startCommand: python revisionbot.py
+    envVars:
+      - key: BOT_TOKEN
+        sync: false  # IMPORTANT : à définir manuellement dans le tableau de bord Render
