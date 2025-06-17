@@ -1,0 +1,74 @@
+from telegram import Update, ReplyKeyboardMarkup
+from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
+
+# Exemple de QCM
+QCM = {
+    "niveau_1": [
+        {"question": "2 + 2 = ?", "options": ["3", "4", "5"], "reponse": "4"},
+        {"question": "Capitale du Burkina ?", "options": ["Bobo", "Ouaga", "Koudougou"], "reponse": "Ouaga"}
+    ],
+    "niveau_2": [
+        {"question": "5 * 6 = ?", "options": ["30", "35", "40"], "reponse": "30"}
+    ]
+}
+
+# Stocker les niveaux des élèves (en mémoire pour simplifier)
+eleves = {}
+
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("Bienvenue ! Quel est ton niveau ? (niveau_1 / niveau_2)")
+
+async def set_niveau(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    niveau = update.message.text
+    if niveau in QCM:
+        eleves[update.message.chat_id] = {"niveau": niveau, "qcm_index": 0}
+        await envoyer_qcm(update, context)
+    else:
+        await update.message.reply_text("Niveau inconnu. Réessaye (niveau_1 / niveau_2).")
+
+async def envoyer_qcm(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    chat_id = update.message.chat_id
+    niveau_info = eleves.get(chat_id)
+    
+    if not niveau_info:
+        await update.message.reply_text("D'abord, indique ton niveau (niveau_1 / niveau_2).")
+        return
+    
+    niveau = niveau_info["niveau"]
+    index = niveau_info["qcm_index"]
+    
+    if index >= len(QCM[niveau]):
+        await update.message.reply_text("Bravo ! Tu as terminé tous les QCM de ton niveau.")
+        return
+    
+    qcm = QCM[niveau][index]
+    options = ReplyKeyboardMarkup([[opt] for opt in qcm["options"]], one_time_keyboard=True)
+    await update.message.reply_text(qcm["question"], reply_markup=options)
+
+async def verifier_reponse(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    chat_id = update.message.chat_id
+    niveau_info = eleves.get(chat_id)
+    
+    if not niveau_info:
+        await update.message.reply_text("Indique ton niveau avec /start")
+        return
+    
+    niveau = niveau_info["niveau"]
+    index = niveau_info["qcm_index"]
+    qcm = QCM[niveau][index]
+    
+    if update.message.text == qcm["reponse"]:
+        await update.message.reply_text("✅ Bonne réponse !")
+    else:
+        await update.message.reply_text(f"❌ Mauvaise réponse ! La bonne réponse était : {qcm['reponse']}")
+    
+    eleves[chat_id]["qcm_index"] += 1
+    await envoyer_qcm(update, context)
+
+app = ApplicationBuilder().token("TON_TOKEN_ICI").build()
+
+app.add_handler(CommandHandler("start", start))
+app.add_handler(MessageHandler(filters.Regex("^(niveau_1|niveau_2)$"), set_niveau))
+app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, verifier_reponse))
+
+app.run_polling()
