@@ -1,7 +1,7 @@
 # revisionbot.py
 
 import os
-import nest_asyncio
+#import nest_asyncio
 import asyncio
 from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import (
