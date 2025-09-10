@@ -9,7 +9,7 @@ from telegram.ext import (
 )
 
 # Appliquer nest_asyncio pour permettre l'exécution imbriquée des boucles asyncio
-nest_asyncio.apply()
+#nest_asyncio.apply()
 
 # Charger le token depuis les variables d'environnement (à configurer sur Render)
 TOKEN = os.getenv("BOT_TOKEN")
