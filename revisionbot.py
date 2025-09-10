@@ -1,18 +1,11 @@
 # revisionbot.py
 
 import os
-#import nest_asyncio
-import asyncio
 from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
-from telegram.ext import (
-    ApplicationBuilder, CommandHandler, CallbackQueryHandler, ContextTypes
-)
-
-# Appliquer nest_asyncio pour permettre l'exécution imbriquée des boucles asyncio
-#nest_asyncio.apply()
+from telegram.ext import ApplicationBuilder, CommandHandler, CallbackQueryHandler, ContextTypes
 
 # Charger le token depuis les variables d'environnement (à configurer sur Render)
-TOKEN = os.getenv("BOT_TOKEN")
+TOKEN = os.getenv("TOKEN")
 
 # ========================
 # Données des QCM
@@ -130,4 +123,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-   # asyncio.run(main())
