@@ -118,7 +118,7 @@ async def verifier_reponse(update: Update, context: ContextTypes.DEFAULT_TYPE):
 # ========================
 # Lancement du bot
 # ========================
-async def main():
+def main():
     print("🤖 Bot en cours d'exécution...")
     app = ApplicationBuilder().token(TOKEN).build()
 
@@ -126,7 +126,8 @@ async def main():
     app.add_handler(CallbackQueryHandler(choisir_niveau, pattern="^niveau:"))
     app.add_handler(CallbackQueryHandler(verifier_reponse))
 
-    await app.run_polling()
+    app.run_polling()
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()
+   # asyncio.run(main())
